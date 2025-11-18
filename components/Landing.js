@@ -6,7 +6,7 @@ import Svg, { Use } from 'react-native-svg';
 
 const COLORS = {
   white: '#ffffff',
-  gold: '#d4af37',
+  gold: '#FFD700', //'#d4af37',
   goldDark: '#b38f2a',
   black: '#000000',
 };
@@ -63,6 +63,46 @@ const SERVICES = [
   },
 ];
 
+const SPECIALIZED_SERVICES = [
+  {
+    name: 'Reproducción bovina: inseminación artificial',
+    desc: 'Servicio profesional para mejorar la eficiencia reproductiva.',
+    price: 'Consultar precio',
+    image: require('../assets/page1/inseminacionBovina.jpg'),
+  },
+  {
+    name: 'Identificación bovina: marcación y tatuado',
+    desc: 'Métodos seguros para la identificación del ganado.',
+    price: 'Consultar precio',
+    image: require('../assets/page1/marcacionBovina.png'),
+  },
+  {
+    name: 'Formulación de dietas y planes nutricionales',
+    desc: 'Dietas personalizadas según especie y necesidades.',
+    price: 'Consultar precio',
+    image: require('../assets/page1/dietasNutricion3.jpg'),
+  },
+  {
+    name: 'Acuicultura: diagnóstico de patologías',
+    desc: 'Detección y manejo de enfermedades en sistemas acuícolas.',
+    price: 'Consultar precio',
+    image: require('../assets/page1/patologiasAcuicultura2.png'),
+  },
+  {
+    name: 'Acuicultura: nutrición y alimentación',
+    desc: 'Planes nutricionales para peces y organismos acuáticos.',
+    price: 'Consultar precio',
+    image: require('../assets/page1/nutricionAcuicultura.png'),
+  },
+  {
+    name: 'Nutrición en aves de postura',
+    desc: 'Manejo nutricional para mejorar la producción y bienestar.',
+    price: 'Consultar precio',
+    image: require('../assets/page1/avesPosturaNutricion.png'),
+  },
+];
+
+
 export default function Landing() {
   const { width, height } = useWindowDimensions();
   const heroHeight = height;
@@ -80,12 +120,12 @@ export default function Landing() {
   const cellMinHBig = width > 991 ? 331 : width > 767 ? 257 : width > 575 ? 578 : 364;
   const cellMinHSmall = width > 991 ? 289 : width > 767 ? 224 : width > 575 ? 504 : 317;
   const scrollRef = useRef(null);
-  const anchors = useRef({ eslogan: 0, servicios: 0, tienda: 0, cita: 0, contacto: 0 });
+  const anchors = useRef({ eslogan: 0, servicios: 0, especializados: 0, tienda: 0, cita: 0, contacto: 0 });
   const HEADER_H = 64;
   const [isScrolled, setIsScrolled] = useState(false);
 
   const scrollTo = (key) => {
-    const y = anchors[key] ?? 0;
+    const y = anchors.current[key] ?? 0;
     if (scrollRef.current) scrollRef.current.scrollTo({ y: Math.max(y - HEADER_H, 0), animated: true });
   };
 
@@ -128,7 +168,12 @@ export default function Landing() {
         <View style={styles.headerMenu}>
           <Pressable style={styles.headerNavLink} onPress={() => scrollTo('servicios')}>
             {({ hovered }) => (
-              <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Nuestros servicios</Text>
+              <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Servicios Spa</Text>
+            )}
+          </Pressable>
+          <Pressable style={styles.headerNavLink} onPress={() => scrollTo('especializados')}>
+            {({ hovered }) => (
+              <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Servicios Especializados</Text>
             )}
           </Pressable>
           <Pressable style={styles.headerNavLink} onPress={() => scrollTo('cita')}>
@@ -164,7 +209,7 @@ export default function Landing() {
           source={require('../assets/page1/pexelsphoto406014.jpeg')}
           style={[styles.hero, { height: heroHeight, width: '100%', paddingTop: heroPadTop }]}
           imageStyle={styles.heroImage}
-          onLayout={(e) => { anchors.eslogan = e.nativeEvent.layout.y; }}
+          onLayout={(e) => { anchors.current.eslogan = e.nativeEvent.layout.y; }}
         >
           <View style={[styles.heroTextBox, { width: textWidth, maxWidth: textWidth }]}>
             <Text style={[styles.bannerKicker, { color: '#FFD700' }]}>Jency Paola</Text>
@@ -174,7 +219,7 @@ export default function Landing() {
         </ImageBackground>
 
         {/* Servicios */}
-        <View style={styles.servicesWrap}>
+        <View style={styles.servicesWrap} onLayout={(e) => (anchors.current.servicios = e.nativeEvent.layout.y)}>
           <Text style={styles.sectionHeading}>Servicios</Text>
           <View style={styles.servicesGrid}>
             {SERVICES.map((s) => (
@@ -208,7 +253,7 @@ export default function Landing() {
           <View style={styles.separatorGlow} />
         </View>
 
-        <View style={styles.citaSection}>
+        <View style={styles.citaSection} onLayout={(e) => (anchors.current.cita = e.nativeEvent.layout.y)}>
 
           <View style={styles.citaRow}>
             {/* Imagen a la izquierda sin zoom */}
@@ -260,6 +305,34 @@ export default function Landing() {
                 <Text style={styles.ctaLabel}>Reservar por WhatsApp</Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+
+        
+       {/* Servicios Veterinarios Especializados */}
+        <View style={styles.servicesWrap} onLayout={(e) => (anchors.current.especializados = e.nativeEvent.layout.y)}>
+          <Text style={styles.sectionHeading}>Servicios Veterinarios Especializados</Text>
+          <View style={styles.servicesGrid}>
+            {SPECIALIZED_SERVICES.map((s) => (
+              <View key={s.name} style={styles.serviceCard}>
+                <ImageBackground
+                  source={s.image}
+                  style={styles.serviceImage}
+                  imageStyle={{ borderRadius: 12 }}
+                />
+                <View style={styles.serviceBody}>
+                  <Text style={styles.serviceTitle}>{s.name}</Text>
+                  <Text style={styles.serviceDesc}>{s.desc}</Text>
+                  <Text style={styles.servicePrice}>{s.price}</Text>
+                  <TouchableOpacity
+                    onPress={() => openWhatsApp({ serviceWanted: s.name })}
+                    style={styles.serviceButton}
+                  >
+                    <Text style={styles.serviceButtonLabel}>Solicitar información</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
           </View>
         </View>
 
