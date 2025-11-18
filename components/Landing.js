@@ -3,6 +3,7 @@ import { ScrollView, View, Text, ImageBackground, TouchableOpacity, Pressable, S
 import { WebView } from 'react-native-webview';
 import Svg, { Use } from 'react-native-svg';
 
+
 const COLORS = {
   white: '#ffffff',
   gold: '#d4af37',
@@ -15,58 +16,50 @@ const SERVICES = [
     name: 'Baño y secado profesional',
     desc: 'Baño premium con productos suaves y secado seguro.',
     price: 'Desde $30.000',
-    svg: (
-      <Svg 
-        preserveAspectRatio="xMidYMin slice" 
-        viewBox="0 0 435.766 435.766"
-        width={100}
-        height={100}
-      >
-        <Use href="#svg-3efc" />
-      </Svg>
-    ),
+    image: require('../assets/page1/BanoSecadoProfesional2.png'),
   },
   {
     name: 'Corte de pelo y peinado personalizado',
     desc: 'Estilo según la raza y preferencias del propietario.',
     price: 'Desde $35.000',
-    image: require('../assets/page1/pexelsphoto662417.jpeg'),
+    image: require('../assets/page1/cortePelo.jpg'),
   },
   {
     name: 'Limpieza dental',
     desc: 'Higiene bucal para una sonrisa sana y fresca.',
     price: 'Desde $25.000',
-    image: require('../assets/page1/pexelsphoto3452072.jpeg'),
+    image: require('../assets/page1/cepillandose2.png'),
   },
   {
     name: 'Corte de uñas',
     desc: 'Corte seguro y limado sin estrés.',
     price: 'Desde $10.000',
-    image: require('../assets/page1/pexelsphoto406014.jpeg'),
+    image: require('../assets/page1/corteUnas.png'),
   },
   {
     name: 'Tratamientos antipulgas y garrapatas',
     desc: 'Protección efectiva y cuidadosa contra parásitos.',
     price: 'Desde $30.000',
     image: require('../assets/page1/pexelsphoto3377909.jpeg'),
+    image: require('../assets/page1/TratamientosAntipulgasGarrapatas2.png'),
   },
   {
-    name: 'Masajes relajantes',
+    name: 'Masajes relajantes y spa premium',
     desc: 'Relajación y bienestar para tu mejor amigo.',
     price: 'Desde $20.000',
-    image: require('../assets/page1/pexelsphoto662417.jpeg'),
+    image: require('../assets/page1/pexelsphoto3377909.jpeg'),
   },
   {
-    name: 'Aromaterapia y spa premium',
-    desc: 'Experiencia spa con fragancias suaves y cuidado.',
+    name: 'Primeros auxilios',
+    desc: 'Cuidado rápido y seguro ante emergencias.',
     price: 'Desde $40.000',
-    image: require('../assets/page1/pexelsphoto3452072.jpeg'),
+    image: require('../assets/page1/primerosAuxilios.png'),
   },
   {
     name: 'Recogida y entrega a domicilio (opcional)',
     desc: 'Comodidad total con transporte seguro.',
     price: 'Consultar tarifas',
-    image: require('../assets/page1/pexelsphoto406014.jpeg'),
+    image: require('../assets/page1/transporteMascota.png'),
   },
 ];
 
@@ -87,7 +80,7 @@ export default function Landing() {
   const cellMinHBig = width > 991 ? 331 : width > 767 ? 257 : width > 575 ? 578 : 364;
   const cellMinHSmall = width > 991 ? 289 : width > 767 ? 224 : width > 575 ? 504 : 317;
   const scrollRef = useRef(null);
-  const anchors = useRef({ eslogan: 0, servicios: 0, tienda: 0, cita: 0, contacto: 0 }).current;
+  const anchors = useRef({ eslogan: 0, servicios: 0, tienda: 0, cita: 0, contacto: 0 });
   const HEADER_H = 64;
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -112,12 +105,21 @@ export default function Landing() {
     const url = `https://wa.me/${to}?text=${encodeURIComponent(msg)}`;
     Linking.openURL(url);
   };
+
+  const openExternal = (url) => {
+    if (Platform.OS === 'web') {
+      window.open(url, '_blank'); // abre en nueva pestaña
+    } else {
+      Linking.openURL(url);       // abre en app móvil
+    }
+  };
+
   return (
     <View style={styles.page}>
       <View style={[styles.header, isScrolled && styles.headerScrolled]}>
         <TouchableOpacity style={styles.logoWrap} onPress={() => scrollTo('eslogan')}>
           <Image
-            source={require('../assets/homeLogo2.png')}
+            source={require('../assets/homeLogo4.png')}
             style={styles.headerLogoLarge}
             resizeMode="contain"
           />
@@ -134,7 +136,11 @@ export default function Landing() {
               <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Separar cita</Text>
             )}
           </Pressable>
-          <Pressable style={styles.headerNavLink} onPress={() => scrollTo('tienda')}>
+          {/* Tienda → enlace externo */}
+          <Pressable
+            style={styles.headerNavLink}
+            onPress={() => openExternal('https://mi-tienda.com')}
+          >
             {({ hovered }) => (
               <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Tienda</Text>
             )}
@@ -145,7 +151,6 @@ export default function Landing() {
               <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Contacto</Text>
             )}
           </Pressable>
-
         </View>
       </View>
       <ScrollView
@@ -155,154 +160,161 @@ export default function Landing() {
         onScroll={(e) => setIsScrolled(e.nativeEvent.contentOffset.y > 8)}
         scrollEventThrottle={16}
       >
-      <ImageBackground
-        source={require('../assets/page1/pexelsphoto406014.jpeg')}
-        style={[styles.hero, { height: heroHeight, width: '100%', paddingTop: heroPadTop }]}
-        imageStyle={styles.heroImage}
-        onLayout={(e) => { anchors.eslogan = e.nativeEvent.layout.y; }}
-      >
-        <View style={[styles.heroTextBox, { width: textWidth, maxWidth: textWidth }]}>
-          <Text style={[styles.bannerKicker, { color: '#FFD700' }]}>Jency Paola</Text>
-          <Text numberOfLines={1} style={[styles.heroKicker, { fontSize: titleSize }]}>{kickerText}</Text>
-          <Text style={styles.heroTagline}>Dale a tu peludo amor, lujo y el cuidado que merece.</Text>
-        </View>
-      </ImageBackground>
-
-      {/* Servicios destacados – mantiene el diseño original */}
-      <View onLayout={(e) => { anchors.servicios = e.nativeEvent.layout.y; }} style={styles.section3Wrap}>
-        <View style={styles.section3Row}>
-          <View style={[styles.sectionTextCell, { minHeight: cellMinHBig }]}> 
-            <View style={styles.sectionIcon} />
-            <Text style={styles.sectionTextTitle}>Baño y secado profesional</Text>
-            <Text style={styles.sectionTextBody}>Baño premium con productos suaves y secado seguro.</Text>
+        <ImageBackground
+          source={require('../assets/page1/pexelsphoto406014.jpeg')}
+          style={[styles.hero, { height: heroHeight, width: '100%', paddingTop: heroPadTop }]}
+          imageStyle={styles.heroImage}
+          onLayout={(e) => { anchors.eslogan = e.nativeEvent.layout.y; }}
+        >
+          <View style={[styles.heroTextBox, { width: textWidth, maxWidth: textWidth }]}>
+            <Text style={[styles.bannerKicker, { color: '#FFD700' }]}>Jency Paola</Text>
+            <Text numberOfLines={1} style={[styles.heroKicker, { fontSize: titleSize }]}>{kickerText}</Text>
+            <Text style={styles.heroTagline}>Dale a tu peludo todo el amor, el lujo y el cuidado que se merece.</Text>
           </View>
-          <View style={[styles.sectionTextCell, { minHeight: cellMinHBig }]}> 
-            <View style={styles.sectionIcon} />
-            <Text style={styles.sectionTextTitle}>Corte de pelo y peinado personalizado</Text>
-            <Text style={styles.sectionTextBody}>Estilo acorde a la raza y preferencias del propietario.</Text>
-          </View>
-          <ImageBackground
-            source={require('../assets/page1/pexelsphoto3377909.jpeg')}
-            style={[styles.sectionImageCell, { minHeight: cellMinHBig }]}
-            imageStyle={{ borderRadius: 12, resizeMode: 'cover' }}
-          />
-        </View>
+        </ImageBackground>
 
-        <View style={styles.section3Row}>
-          <View style={[styles.sectionTextCell, { minHeight: cellMinHSmall }]}> 
-            <View style={styles.sectionIcon} />
-            <Text style={styles.sectionTextTitle}>Limpieza dental</Text>
-            <Text style={styles.sectionTextBody}>Higiene bucal para una sonrisa sana y fresca.</Text>
-          </View>
-          <ImageBackground
-            source={require('../assets/page1/pexelsphoto662417.jpeg')}
-            style={[styles.sectionImageCell, { minHeight: cellMinHSmall }]}
-            imageStyle={{ borderRadius: 12, resizeMode: 'cover' }}
-          />
-          <View style={[styles.sectionTextCell, { minHeight: cellMinHSmall }]}> 
-            <View style={styles.sectionIcon} />
-            <Text style={styles.sectionTextTitle}>Tratamientos antipulgas y garrapatas</Text>
-            <Text style={styles.sectionTextBody}>Protección efectiva y cuidadosa contra parásitos.</Text>
-          </View>
-        </View>
-      </View>
-
-
-      <ImageBackground
-        source={require('../assets/page1/pexelsphoto3452072.jpeg')}
-        style={styles.banner}
-        imageStyle={styles.bannerImage}
-      >
-        <View style={styles.bannerOverlay} />
-        <View style={styles.bannerBox}>
-          <Text style={styles.bannerTitle}>Tu compañero merece lo mejor, nosotros se lo damos</Text>
-          <Text style={styles.bannerKicker}>EXPERIENCIA SPA PREMIUM</Text>
-        </View>
-      </ImageBackground>
-
-      {/*
-      <View style={styles.ctaBox}>
-        <TouchableOpacity onPress={() => scrollTo('cita')} style={styles.ctaButton}>
-          <Text style={styles.ctaLabel}>Agendar Cita</Text>
-        </TouchableOpacity>
-        <View style={styles.primaryButtonsRow}>
-          <TouchableOpacity onPress={() => scrollTo('servicios')} style={styles.primaryButtonOutline}><Text style={styles.primaryButtonLabel}>Nuestros servicios</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => scrollTo('tienda')} style={styles.primaryButtonOutline}><Text style={styles.primaryButtonLabel}>Tienda de productos</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => scrollTo('contacto')} style={styles.primaryButtonOutline}><Text style={styles.primaryButtonLabel}>Contacto</Text></TouchableOpacity>
-        </View>
-      </View>
-      */}
-
-      {/* Servicios */}
-      <View style={styles.servicesWrap}>
-        <Text style={styles.sectionHeading}>Servicios</Text>
-        <View style={styles.servicesGrid}>
-          {SERVICES.map((s) => (
-            <View key={s.name} style={styles.serviceCard}>
-              <ImageBackground source={s.image} style={styles.serviceImage} imageStyle={{ borderRadius: 12 }} />
-              <View style={styles.serviceBody}>
-                <Text style={styles.serviceTitle}>{s.name}</Text>
-                <Text style={styles.serviceDesc}>{s.desc}</Text>
-                <Text style={styles.servicePrice}>{s.price}</Text>
-                <TouchableOpacity onPress={() => openWhatsApp({ serviceWanted: s.name })} style={styles.serviceButton}><Text style={styles.serviceButtonLabel}>Separar cita</Text></TouchableOpacity>
+        {/* Servicios */}
+        <View style={styles.servicesWrap}>
+          <Text style={styles.sectionHeading}>Servicios</Text>
+          <View style={styles.servicesGrid}>
+            {SERVICES.map((s) => (
+              <View key={s.name} style={styles.serviceCard}>
+                <ImageBackground source={s.image} style={styles.serviceImage} imageStyle={{ borderRadius: 12 }} />
+                <View style={styles.serviceBody}>
+                  <Text style={styles.serviceTitle}>{s.name}</Text>
+                  <Text style={styles.serviceDesc}>{s.desc}</Text>
+                  <Text style={styles.servicePrice}>{s.price}</Text>
+                  <TouchableOpacity onPress={() => openWhatsApp({ serviceWanted: s.name })} style={styles.serviceButton}><Text style={styles.serviceButtonLabel}>Separar cita</Text></TouchableOpacity>
+                </View>
               </View>
-            </View>
-          ))}
-        </View>
-      </View>
-
-      {/* Tienda de productos (placeholder) */}
-      <View onLayout={(e) => { anchors.tienda = e.nativeEvent.layout.y; }} style={styles.shopWrap}>
-        <Text style={styles.sectionHeading}>Tienda de productos</Text>
-        <Text style={styles.sectionSub}>Próximamente.</Text>
-      </View>
-
-      {/* Separar cita */}
-      <View onLayout={(e) => { anchors.cita = e.nativeEvent.layout.y; }} style={styles.formWrap}>
-        <Text style={styles.sectionHeading}>Separar cita</Text>
-        <View style={styles.formGrid}>
-          <TextInput value={petType} onChangeText={setPetType} placeholder="Tipo de mascota (perro, gato, otro)" style={styles.input} />
-          <TextInput value={serviceWanted} onChangeText={setServiceWanted} placeholder="Servicio deseado" style={styles.input} />
-          <TextInput value={dateTime} onChangeText={setDateTime} placeholder="Fecha y hora" style={styles.input} />
-          <TextInput value={ownerName} onChangeText={setOwnerName} placeholder="Nombre del propietario" style={styles.input} />
-          <TextInput value={comments} onChangeText={setComments} placeholder="Comentarios adicionales" style={styles.input} multiline />
-        </View>
-        <TouchableOpacity onPress={() => openWhatsApp()} style={styles.ctaButton}><Text style={styles.ctaLabel}>Reservar por WhatsApp</Text></TouchableOpacity>
-      </View>
-
-      {/* Contacto */}
-      <View onLayout={(e) => { anchors.contacto = e.nativeEvent.layout.y; }} style={styles.contactWrap}>
-        <Text style={styles.sectionHeading}>Contacto</Text>
-        <View style={styles.mapWrap}>
-          <View style={styles.mapCard}>
-            {Platform.OS === 'web' ? (
-              <iframe
-                title="Mapa Elegant Pets Spa"
-                src="https://maps.google.com/maps?q=3.325972,-76.236619&z=16&output=embed"
-                style={styles.mapIframe}
-                frameBorder="0"
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            ) : (
-              <WebView
-                style={styles.mapWeb}
-                source={{ uri: 'https://maps.google.com/maps?q=3.325972,-76.236619&z=16&output=embed' }}
-              />
-            )}
+            ))}
           </View>
         </View>
-        <TouchableOpacity onPress={() => Linking.openURL('https://maps.google.com/?q=3.325972,-76.236619')}><Text style={styles.link}>Abrir en Google Maps</Text></TouchableOpacity>
-        <Text style={styles.contactText}>Dirección: Calle 7 #14-13, Florida Valle</Text>
-        <TouchableOpacity onPress={() => Linking.openURL('https://wa.me/573137284698')}><Text style={styles.contactText}>Teléfono / WhatsApp: +57 3137284698</Text></TouchableOpacity>
-        <Text style={styles.contactText}>Horario: Lunes a sábado: 8:00 a.m. – 6:00 p.m. · Domingo: cerrado</Text>
-        <View style={styles.socialRow}>
-          <TouchableOpacity onPress={() => Linking.openURL('https://instagram.com')}><Text style={styles.link}>Instagram</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => Linking.openURL('https://facebook.com')}><Text style={styles.link}>Facebook</Text></TouchableOpacity>
-        </View>
-      </View>
 
-      
+        <ImageBackground
+          source={require('../assets/page1/pexelsphoto3452072.jpeg')}
+          style={styles.banner}
+          imageStyle={styles.bannerImage}
+        >
+          <View style={styles.bannerOverlay} />
+          <View style={styles.bannerBox}>
+            <Text style={styles.bannerTitle}>Tu compañero merece lo mejor, nosotros se lo damos</Text>
+            <Text style={styles.bannerKicker}>EXPERIENCIA SPA PREMIUM</Text>
+          </View>
+        </ImageBackground>
+
+        {/* Separar cita */}
+        <View style={styles.separatorGlowContainer}>
+          <View style={styles.separatorGlow} />
+        </View>
+
+        <View style={styles.citaSection}>
+
+          <View style={styles.citaRow}>
+            {/* Imagen a la izquierda sin zoom */}
+            <Image
+              source={require('../assets/page1/gatoalreves1.png')}
+              style={styles.citaImageLeft}
+              resizeMode="contain" // mantiene proporción sin zoom
+            />
+
+            {/* Formulario a la derecha */}
+            <View style={styles.citaFormRight}>
+              <Text style={styles.sectionHeading2}>Separar cita</Text>
+
+              <View style={styles.formGrid}>
+                <TextInput
+                  value={petType}
+                  onChangeText={setPetType}
+                  placeholder="Tipo de mascota (perro, gato, otro)"
+                  style={styles.input}
+                />
+                <TextInput
+                  value={serviceWanted}
+                  onChangeText={setServiceWanted}
+                  placeholder="Servicio deseado"
+                  style={styles.input}
+                />
+                <TextInput
+                  value={dateTime}
+                  onChangeText={setDateTime}
+                  placeholder="Fecha y hora"
+                  style={styles.input}
+                />
+                <TextInput
+                  value={ownerName}
+                  onChangeText={setOwnerName}
+                  placeholder="Nombre del propietario"
+                  style={styles.input}
+                />
+                <TextInput
+                  value={comments}
+                  onChangeText={setComments}
+                  placeholder="Comentarios adicionales"
+                  style={styles.input}
+                  multiline
+                />
+              </View>
+
+              <TouchableOpacity onPress={openWhatsApp} style={styles.ctaButton}>
+                <Text style={styles.ctaLabel}>Reservar por WhatsApp</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+
+        {/* Contacto */}
+        <View
+          onLayout={(e) => (anchors.current.contacto = e.nativeEvent.layout.y)}
+          style={[styles.contactWrap, { marginTop: 60 }]}   // separación extra
+        >
+          <Text style={styles.sectionHeading}>Contacto</Text>
+
+          <View style={styles.mapWrap}>
+            <View style={styles.mapCard}>
+              {Platform.OS === 'web' ? (
+                <iframe
+                  title="Mapa Elegant Pets Spa"
+                  src="https://maps.google.com/maps?q=3.325972,-76.236619&z=16&output=embed"
+                  style={styles.mapIframe}
+                  frameBorder="0"
+                  loading="lazy"
+                />
+              ) : (
+                <WebView
+                  style={styles.mapWeb}
+                  source={{
+                    uri: 'https://maps.google.com/maps?q=3.325972,-76.236619&z=16&output=embed',
+                  }}
+                />
+              )}
+            </View>
+          </View>
+
+          <TouchableOpacity onPress={() => Linking.openURL('https://maps.google.com/?q=3.325972,-76.236619')}>
+            <Text style={styles.link}>Abrir en Google Maps</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.contactText}>Dirección: Calle 7 #14-13, Florida Valle</Text>
+
+          <TouchableOpacity onPress={() => Linking.openURL('https://wa.me/573137284698')}>
+            <Text style={styles.contactText}>Teléfono / WhatsApp: +57 3137284698</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.contactText}>
+            Horario: Lunes a sábado: 8:00 a.m. – 6:00 p.m. · Domingo: cerrado
+          </Text>
+
+          <View style={styles.socialRow}>
+            <TouchableOpacity onPress={() => Linking.openURL('https://instagram.com')}>
+              <Text style={styles.link}>Instagram</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => Linking.openURL('https://facebook.com')}>
+              <Text style={styles.link}>Facebook</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </ScrollView>
     </View>
   );
@@ -323,10 +335,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.white,
   },
+
   wrap: {
     flex: 1,
     backgroundColor: COLORS.white,
   },
+
   header: {
     position: 'absolute',
     top: 0,
@@ -340,22 +354,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'transparent',
   },
+
   headerScrolled: {
     backgroundColor: 'rgba(0,0,0,0.35)',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'rgba(255,255,255,0.25)',
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 4,
+
+    // 🔥 Nuevo estándar para sombras en Expo Web
+    boxShadow: '0px 4px 12px rgba(0,0,0,0.25)',
   },
   logoWrap: {
     height: 64,
     justifyContent: 'center',
   },
   headerLogoLarge: {
-    width: 220,
-    height: 65,
+    top: 25,
+    width: 280,
+    height: 165,
   },
   headerSpacer: {
     flex: 1,
@@ -591,6 +606,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     alignSelf: 'center',
   },
+  sectionHeading2: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: COLORS.black,
+    marginBottom: 12,
+    alignSelf: 'flex-start',
+    marginLeft: 240,
+  },
   sectionSub: {
     fontSize: 14,
     color: '#555',
@@ -604,22 +627,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 12,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
+
   serviceCard: {
-    width: '48%',
-    minWidth: 280,
+    flexBasis: '48%',        // sigue ocupando 48% de ancho
+    flexGrow: 1,
+    maxWidth: 340,           // ← limita el tamaño máximo del card
     backgroundColor: '#f9f9f9',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#eee',
     overflow: 'hidden',
+    marginBottom: 12,
   },
+
   serviceImage: {
-    height: 140,
+    width: '100%',
+    height: 160,           // fija una altura razonable
+    resizeMode: 'cover',
   },
   serviceBody: {
     padding: 12,
+    justifyContent: 'space-between',
   },
   serviceTitle: {
     fontSize: 16,
@@ -716,4 +746,119 @@ const styles = StyleSheet.create({
     color: COLORS.gold,
     fontWeight: '600',
   },
+
+
+  citasContainer: {
+    width: '100%',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    marginTop: 30,
+    borderRadius: 20,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  citasContent: {
+    backgroundColor: 'transparent', // panel fino
+    padding: 20,
+    borderRadius: 20,
+    width: '100%',
+    maxWidth: 450,
+    alignItems: 'center',
+  },
+
+  citasTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 10,
+  },
+
+  citasText: {
+    fontSize: 16,
+    color: '#000',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+
+  citasButton: {
+    backgroundColor: '#d4af37',
+    paddingHorizontal: 25,
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+
+  citasButtonLabel: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  /*
+    separatorGlowContainer: {
+      width: '100%',
+      alignItems: 'center',
+      marginVertical: 20,
+    },
+  
+    separatorGlow: {
+      width: '70%',
+      height: 3,
+      //backgroundColor: '#d4af37',
+      borderRadius: 50,
+      //shadowColor: '#d4af37',
+      shadowOpacity: 0.9,
+      //shadowRadius: 10,
+      elevation: 8,
+    },
+  */
+  citaSection: {
+    marginBottom: 40,
+    top: 40,
+    width: '100%',
+    paddingBottom: 20,  // si quieres espacio al final
+    overflow: 'hidden',
+  },
+
+  /*
+  citasContainer: {
+    width: '100%',
+    minHeight: 600,
+    justifyContent: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },*/
+
+  citasContainer: {
+    width: '100%',
+    minHeight: 600,
+    justifyContent: 'flex-start', // ← pega el contenido al top
+    paddingVertical: 0,           // ← elimina padding superior
+    paddingHorizontal: 20,        // deja algo de espacio lateral
+    borderRadius: 0,              // opcional si quieres que se vea clara, sin curvas
+    overflow: 'hidden',
+  },
+
+  formWrap: {
+    alignItems: 'flex-end',
+    width: '100%',
+  },
+
+  citaRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    gap: 20,
+  },
+
+  citaImageLeft: {
+    width: 400,         // ancho fijo
+    height: 500,        // controla la altura según tu diseño
+  },
+
+  citaFormRight: {
+    flex: 1,
+    alignItems: 'flex-start',
+  }
+
 });

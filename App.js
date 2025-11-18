@@ -329,12 +329,8 @@ export default function App() {
   return (
     <PaperProvider theme={paperTheme}>
       <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={({ navigation, route }) => ({
-            header: () => <Header title={route.name} navigation={navigation} />,
-          })}
-        >
-          <Stack.Screen name="Inicio" component={HomeScreen} options={{ header: () => null }} />
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Inicio" component={HomeScreen} />
           <Stack.Screen name="Agenda" component={AgendaScreen} />
           <Stack.Screen name="Pacientes" component={PacientesScreen} />
           <Stack.Screen name="HistoriaClinica" component={HistoriaClinicaScreen} />
@@ -347,6 +343,7 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
+
   );
 }
 
