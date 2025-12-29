@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { ScrollView, View, Text, ImageBackground, TouchableOpacity, Pressable, StyleSheet, useWindowDimensions, TextInput, Linking, Image, Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
 import Svg, { Use } from 'react-native-svg';
+import { Ionicons } from '@expo/vector-icons';
 
 
 const COLORS = {
@@ -105,6 +106,7 @@ const SPECIALIZED_SERVICES = [
 
 export default function Landing() {
   const { width, height } = useWindowDimensions();
+  const isMobile = width <= 768;
   const heroHeight = height;
   const textWidth = width > 991 ? 740 : width > 767 ? 540 : 340;
   const kickerText = 'ELEGANT PETS SPA';
@@ -121,10 +123,15 @@ export default function Landing() {
   const cellMinHSmall = width > 991 ? 289 : width > 767 ? 224 : width > 575 ? 504 : 317;
   const scrollRef = useRef(null);
   const anchors = useRef({ eslogan: 0, servicios: 0, especializados: 0, tienda: 0, cita: 0, contacto: 0 });
+
   const HEADER_H = 64;
   const [isScrolled, setIsScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => setMenuOpen(!menuOpen);
 
   const scrollTo = (key) => {
+    setMenuOpen(false); // Close menu on selection
     const y = anchors.current[key] ?? 0;
     if (scrollRef.current) scrollRef.current.scrollTo({ y: Math.max(y - HEADER_H, 0), animated: true });
   };
@@ -136,7 +143,7 @@ export default function Landing() {
   const [comments, setComments] = useState('');
 
   const openWhatsApp = (overrides) => {
-    const to = '573137284698';
+    const to = '573136685471';
     const name = overrides?.ownerName ?? ownerName;
     const pet = overrides?.petType ?? petType;
     const service = overrides?.serviceWanted ?? serviceWanted;
@@ -160,43 +167,72 @@ export default function Landing() {
         <TouchableOpacity style={styles.logoWrap} onPress={() => scrollTo('eslogan')}>
           <Image
             source={require('../assets/homeLogo4.png')}
-            style={styles.headerLogoLarge}
+            style={[styles.headerLogoLarge, isMobile && { width: 140, height: 82, top: 10 }]}
             resizeMode="contain"
           />
         </TouchableOpacity>
         <View style={styles.headerSpacer} />
-        <View style={styles.headerMenu}>
-          <Pressable style={styles.headerNavLink} onPress={() => scrollTo('servicios')}>
-            {({ hovered }) => (
-              <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Servicios Spa</Text>
-            )}
-          </Pressable>
-          <Pressable style={styles.headerNavLink} onPress={() => scrollTo('especializados')}>
-            {({ hovered }) => (
-              <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Servicios Especializados</Text>
-            )}
-          </Pressable>
-          <Pressable style={styles.headerNavLink} onPress={() => scrollTo('cita')}>
-            {({ hovered }) => (
-              <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Separar cita</Text>
-            )}
-          </Pressable>
-          {/* Tienda → enlace externo */}
-          <Pressable
-            style={styles.headerNavLink}
-            onPress={() => openExternal('https://mi-tienda.com')}
-          >
-            {({ hovered }) => (
-              <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Tienda</Text>
-            )}
-          </Pressable>
+        <View style={styles.headerSpacer} />
+        
+        {!isMobile ? (
+          <View style={styles.headerMenu}>
+            <Pressable style={styles.headerNavLink} onPress={() => scrollTo('servicios')}>
+              {({ hovered }) => (
+                <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Servicios Spa</Text>
+              )}
+            </Pressable>
+            <Pressable style={styles.headerNavLink} onPress={() => scrollTo('especializados')}>
+              {({ hovered }) => (
+                <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Servicios Especializados</Text>
+              )}
+            </Pressable>
+            <Pressable style={styles.headerNavLink} onPress={() => scrollTo('cita')}>
+              {({ hovered }) => (
+                <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Separar cita</Text>
+              )}
+            </Pressable>
+            {/* Tienda → enlace externo */}
+            <Pressable
+              style={styles.headerNavLink}
+              onPress={() => openExternal('https://mi-tienda.com')}
+            >
+              {({ hovered }) => (
+                <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Tienda</Text>
+              )}
+            </Pressable>
 
-          <Pressable style={styles.headerNavLink} onPress={() => scrollTo('contacto')}>
-            {({ hovered }) => (
-              <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Contacto</Text>
-            )}
-          </Pressable>
-        </View>
+            <Pressable style={styles.headerNavLink} onPress={() => scrollTo('contacto')}>
+              {({ hovered }) => (
+                <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Contacto</Text>
+              )}
+            </Pressable>
+          </View>
+        ) : (
+          <TouchableOpacity onPress={toggleMenu} style={styles.mobileMenuBtn}>
+            <Ionicons name={menuOpen ? "close" : "menu"} size={32} color={COLORS.gold} />
+          </TouchableOpacity>
+        )}
+        
+        {/* Mobile Menu Dropdown */}
+        {isMobile && menuOpen && (
+          <View style={styles.mobileMenuDropdown}>
+            <TouchableOpacity style={styles.mobileMenuItem} onPress={() => scrollTo('servicios')}>
+              <Text style={styles.mobileMenuText}>Servicios Spa</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.mobileMenuItem} onPress={() => scrollTo('especializados')}>
+              <Text style={styles.mobileMenuText}>Servicios Especializados</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.mobileMenuItem} onPress={() => scrollTo('cita')}>
+              <Text style={styles.mobileMenuText}>Separar cita</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.mobileMenuItem} onPress={() => { setMenuOpen(false); openExternal('https://mi-tienda.com'); }}>
+              <Text style={styles.mobileMenuText}>Tienda</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.mobileMenuItem} onPress={() => scrollTo('contacto')}>
+              <Text style={styles.mobileMenuText}>Contacto</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
       <ScrollView
         ref={scrollRef}
@@ -212,9 +248,14 @@ export default function Landing() {
           onLayout={(e) => { anchors.current.eslogan = e.nativeEvent.layout.y; }}
         >
           <View style={[styles.heroTextBox, { width: textWidth, maxWidth: textWidth }]}>
-            <Text style={[styles.bannerKicker, { color: '#FFD700' }]}>Jency Paola</Text>
-            <Text numberOfLines={1} style={[styles.heroKicker, { fontSize: titleSize }]}>{kickerText}</Text>
-            <Text style={styles.heroTagline}>Dale a tu peludo todo el amor, el lujo y el cuidado que se merece.</Text>
+            <Text style={[styles.bannerKicker, { color: '#FFD700' }, isMobile && { fontSize: 12, letterSpacing: 2 }]}>Jency Paola</Text>
+            <Text 
+              numberOfLines={isMobile ? 0 : 1} 
+              style={[styles.heroKicker, { fontSize: isMobile ? 30 : titleSize }, isMobile && { letterSpacing: 2, lineHeight: 42, textAlign: 'center' }]}
+            >
+              {kickerText}
+            </Text>
+            <Text style={[styles.heroTagline, isMobile && { fontSize: 16, paddingHorizontal: 10 }]}>Dale a tu peludo todo el amor, el lujo y el cuidado que se merece.</Text>
           </View>
         </ImageBackground>
 
@@ -223,7 +264,7 @@ export default function Landing() {
           <Text style={styles.sectionHeading}>Servicios</Text>
           <View style={styles.servicesGrid}>
             {SERVICES.map((s) => (
-              <View key={s.name} style={styles.serviceCard}>
+              <View key={s.name} style={[styles.serviceCard, isMobile && { flexBasis: '100%', maxWidth: '100%' }]}>
                 <ImageBackground source={s.image} style={styles.serviceImage} imageStyle={{ borderRadius: 12 }} />
                 <View style={styles.serviceBody}>
                   <Text style={styles.serviceTitle}>{s.name}</Text>
@@ -255,17 +296,17 @@ export default function Landing() {
 
         <View style={styles.citaSection} onLayout={(e) => (anchors.current.cita = e.nativeEvent.layout.y)}>
 
-          <View style={styles.citaRow}>
+          <View style={[styles.citaRow, isMobile && { flexDirection: 'column', alignItems: 'center', gap: 0 }]}>
             {/* Imagen a la izquierda sin zoom */}
             <Image
               source={require('../assets/page1/gatoalreves1.png')}
-              style={styles.citaImageLeft}
+              style={[styles.citaImageLeft, isMobile && { width: '100%', height: 300, marginBottom: 20 }]}
               resizeMode="contain" // mantiene proporción sin zoom
             />
 
             {/* Formulario a la derecha */}
-            <View style={styles.citaFormRight}>
-              <Text style={styles.sectionHeading2}>Separar cita</Text>
+            <View style={[styles.citaFormRight, isMobile && { width: '100%', alignItems: 'center' }]}>
+              <Text style={[styles.sectionHeading2, isMobile && { marginLeft: 0, alignSelf: 'center' }]}>Separar cita</Text>
 
               <View style={styles.formGrid}>
                 <TextInput
@@ -314,7 +355,7 @@ export default function Landing() {
           <Text style={styles.sectionHeading}>Servicios Veterinarios Especializados</Text>
           <View style={styles.servicesGrid}>
             {SPECIALIZED_SERVICES.map((s) => (
-              <View key={s.name} style={styles.serviceCard}>
+              <View key={s.name} style={[styles.serviceCard, isMobile && { flexBasis: '100%', maxWidth: '100%' }]}>
                 <ImageBackground
                   source={s.image}
                   style={styles.serviceImage}
@@ -371,12 +412,12 @@ export default function Landing() {
 
           <Text style={styles.contactText}>Dirección: Calle 7 #14-13, Florida Valle</Text>
 
-          <TouchableOpacity onPress={() => Linking.openURL('https://wa.me/573137284698')}>
-            <Text style={styles.contactText}>Teléfono / WhatsApp: +57 3137284698</Text>
+          <TouchableOpacity onPress={() => Linking.openURL('https://wa.me/573136685471')}>
+            <Text style={styles.contactText}>Teléfono / WhatsApp: +57 313 668 5471</Text>
           </TouchableOpacity>
 
           <Text style={styles.contactText}>
-            Horario: Lunes a sábado: 8:00 a.m. – 6:00 p.m. · Domingo: cerrado
+            Horario: Lunes a sábado: 8:00 a.m. – 5:30 p.m. · Domingo: cerrado
           </Text>
 
           <View style={styles.socialRow}>
@@ -471,7 +512,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: COLORS.gold,
-    fontFamily: 'Open Sans, sans-serif',
+    /*fontFamily: 'Open Sans, sans-serif',*/
   },
   headerLinkHover: {
     color: COLORS.goldDark,
@@ -932,6 +973,42 @@ const styles = StyleSheet.create({
   citaFormRight: {
     flex: 1,
     alignItems: 'flex-start',
-  }
+  },
+
+  // Mobile Menu Styles
+  mobileMenuBtn: {
+    padding: 8,
+  },
+  mobileMenuDropdown: {
+    position: 'absolute',
+    top: 64,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    // Add shadow
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  mobileMenuItem: {
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  mobileMenuText: {
+    fontSize: 18,
+    color: COLORS.black, // Darker color for menu items
+    fontWeight: '500',
+    textAlign: 'center',
+  },
 
 });
