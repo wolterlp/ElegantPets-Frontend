@@ -104,7 +104,7 @@ const SPECIALIZED_SERVICES = [
 ];
 
 
-export default function Landing() {
+export default function Landing({ onLogin }) {
   const { width, height } = useWindowDimensions();
   const isMobile = width <= 768;
   const heroHeight = height;
@@ -206,11 +206,26 @@ export default function Landing() {
                 <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Contacto</Text>
               )}
             </Pressable>
+
+             {/* Login Button */}
+             <Pressable style={styles.headerNavLink} onPress={onLogin}>
+              {({ hovered }) => (
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <Ionicons name="person-circle-outline" size={20} color={COLORS.gold} />
+                  <Text style={[styles.headerLink, hovered && styles.headerLinkHover]}>Ingresar</Text>
+                </View>
+              )}
+            </Pressable>
           </View>
         ) : (
-          <TouchableOpacity onPress={toggleMenu} style={styles.mobileMenuBtn}>
-            <Ionicons name={menuOpen ? "close" : "menu"} size={32} color={COLORS.gold} />
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+             <TouchableOpacity onPress={onLogin} style={styles.mobileMenuBtn}>
+                <Ionicons name="person-circle-outline" size={28} color={COLORS.gold} />
+             </TouchableOpacity>
+             <TouchableOpacity onPress={toggleMenu} style={styles.mobileMenuBtn}>
+                <Ionicons name={menuOpen ? "close" : "menu"} size={32} color={COLORS.gold} />
+             </TouchableOpacity>
+          </View>
         )}
         
         {/* Mobile Menu Dropdown */}
